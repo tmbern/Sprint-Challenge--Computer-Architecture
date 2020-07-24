@@ -16,7 +16,13 @@ CMP = 0b10100111
 JMP = 0b01010100
 JEQ = 0b01010101
 JNE = 0b01010110
-
+AND = 0b10101000
+OR = 0b10101010
+XOR = 0b10101011
+NOT = 0b01101001
+SHL = 0b10101100
+SHR = 0b10101101
+MOD = 0b10100100
 SP = 7
 
 class CPU:
@@ -95,6 +101,33 @@ class CPU:
                 self.flag = 0b00000010
             else:
                 self.flag = 0b00000100
+        
+        elif op == 'AND':
+            self.reg[reg_a] &= self.reg[reg_b]
+        
+        elif op == 'OR':
+            self.reg[reg_a] |= self.reg[reg_b]
+        
+        elif op == 'XOR':
+            self.reg[reg_a] ^= self.reg[reg_b]
+
+        elif op == 'NOT':
+            ~ self.reg[reg_a]
+        
+        elif op == 'SHL':
+            self.reg[reg_a] <<= self.reg[reg_b]
+
+        elif op == 'SHR':
+            self.reg[reg_a] >>= self.reg[reg_b]
+        
+        elif op == 'MOD':
+            if self.reg[reg_b] == 0:
+                print('Cant Divide by Zero')
+                running = False
+                self.pc += 1
+            else:
+                self.reg[reg_a] %= self.reg[reg_b] 
+
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -219,6 +252,35 @@ class CPU:
                     self.pc = self.reg[operand_a]
                 else:
                     self.pc += 2
+            
+            elif instruction == AND:
+                self.alu('AND', operand_a, operand_b)
+                self.pc += 3
+
+            elif instruction == OR:
+                self.alu('OR', operand_a, operand_b)
+                self.pc += 3                    
+
+            elif instruction == XOR:
+                self.alu('XOR', operand_a, operand_b)
+                self.pc += 3
+
+            elif instruction == NOT:
+                self.alu('NOT', operand_a, operand_b)
+                self.pc += 3        
+
+            elif instruction == SHL:
+                self.alu('SHL', operand_a, operand_b)
+                self.pc += 3        
+
+            elif instruction == SHR:
+                self.alu('SHR', operand_a, operand_b)
+                self.pc += 3        
+
+            elif instruction == MOD:
+                self.alu('MOD', operand_a, operand_b)
+                self.pc += 3        
+
             else:
                 print(f'{instruction} not found at address {self.pc}')
                 sys.exit(1)
